@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Eternal vs Swiggy · QCom & Food Delivery · Q4 FY26</title>
+<meta name="description" content="8-quarter KPI comparison: Blinkit vs Instamart and Zomato vs Swiggy. Q4 FY26 data."/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#09090b;--surface:#131316;--surface2:#0d0d10;
+  --border:#1e1e22;--border2:#2a2a2e;
+  --text:#e8e8ea;--muted:#666;--dim:#444;--gray:#888;
+  --eternal:#f97316;--swiggy:#f43f5e;--green:#22c55e;--purple:#a855f7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;font-size:14px}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+nav{background:rgba(9,9,11,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:0 32px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.nav-brand{font-size:15px;font-weight:900;background:linear-gradient(90deg,var(--eternal),var(--swiggy));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-meta{font-size:11px;color:var(--dim);letter-spacing:.5px}
+.nav-back{font-size:12px;color:var(--muted);font-weight:600}
+.nav-back:hover{color:var(--text)}
+.header{max-width:1180px;margin:0 auto;padding:40px 32px 28px}
+.header-kicker{font-size:10px;font-weight:700;color:var(--eternal);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.header-title{font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1px;line-height:1.1;margin-bottom:8px}
+.header-sub{font-size:13px;color:var(--gray)}
+.tabs{display:flex;gap:6px;padding:0 32px;max-width:1180px;margin:24px auto 28px}
+.tab{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s}
+.tab.active{background:rgba(249,115,22,.15);border-color:var(--eternal);color:var(--eternal)}
+.tab:hover:not(.active){border-color:var(--border2);color:var(--text)}
+.panel{display:none;max-width:1180px;margin:0 auto;padding:0 32px 60px}
+.panel.active{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.stat-card.hi{background:rgba(249,115,22,.06);border-color:rgba(249,115,22,.2)}
+.stat-label{font-size:10px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.stat-val{font-size:20px;font-weight:900;font-family:'DM Mono',monospace;color:var(--text)}
+.stat-card.hi .stat-val{color:var(--eternal)}
+.stat-sub{font-size:11px;margin-top:5px}
+.pos{color:var(--green)}.neg{color:var(--swiggy)}.neu{color:var(--gray)}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.chart-card.full{grid-column:span 2}
+.chart-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.chart-sub{font-size:11px;color:var(--dim);margin-bottom:18px}
+.chart-wrap{position:relative;height:220px}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.insight-card{background:var(--surface2);border-radius:12px;padding:18px 18px}
+.insight-num{font-size:36px;font-weight:900;font-family:'DM Mono',monospace;opacity:.2;margin-bottom:8px}
+.insight-title{font-size:12px;font-weight:700;margin-bottom:8px;line-height:1.4}
+.insight-body{font-size:11px;color:var(--gray);line-height:1.65}
+.score-table{width:100%;border-collapse:collapse;margin-bottom:32px}
+.score-table th{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:10px 12px;border-bottom:2px solid var(--border);text-align:left}
+.score-table td{font-size:12px;padding:10px 12px;border-bottom:1px solid var(--border)}
+.score-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.score-table td:nth-child(2),.score-table td:nth-child(3){font-family:'DM Mono',monospace;font-size:12px;font-weight:700}
+.winner-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.5px;padding:2px 8px;border-radius:4px}
+@media(max-width:700px){
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .chart-grid{grid-template-columns:1fr}
+  .chart-card.full{grid-column:span 1}
+  .insight-grid{grid-template-columns:1fr}
+  nav,.tabs,.panel,.header{padding-left:16px;padding-right:16px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Eternal vs Swiggy · Q4 FY26</div>
+  <div class="nav-meta">8-QUARTER KPI ANALYSIS</div>
+  <a href="../../" class="nav-back">← Back to hub</a>
+</nav>
+
+<div class="header">
+  <div class="header-kicker">Platform Intelligence · May 2026</div>
+  <div class="header-title">Eternal vs Swiggy</div>
+  <div class="header-sub">Quick Commerce + Food Delivery · Based on publicly disclosed KPI books</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('qcom',this)">Quick Commerce</button>
+  <button class="tab" onclick="switchTab('food',this)">Food Delivery</button>
+  <button class="tab" onclick="switchTab('scorecard',this)">Scorecard</button>
+</div>
+
+<!-- QUICK COMMERCE -->
+<div id="panel-qcom" class="panel active">
+  <div class="stat-grid">
+    <div class="stat-card hi"><div class="stat-label">Blinkit NOV Q4FY26</div><div class="stat-val">₹143.9bn</div><div class="stat-sub pos">+95.4% YoY</div></div>
+    <div class="stat-card"><div class="stat-label">Instamart NOV Q4FY26</div><div class="stat-val">₹56.8bn</div><div class="stat-sub pos">+60.3% YoY</div></div>
+    <div class="stat-card hi"><div class="stat-label">Blinkit Adj EBITDA</div><div class="stat-val">+₹0.37bn</div><div class="stat-sub pos">First profitable ✓</div></div>
+    <div class="stat-card"><div class="stat-label">Instamart Adj EBITDA</div><div class="stat-val">−₹8.58bn</div><div class="stat-sub neg">−10.9% of GOV</div></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card hi"><div class="stat-label">Blinkit Dark Stores</div><div class="stat-val">2,243</div><div class="stat-sub pos">+216 in Q4</div></div>
+    <div class="stat-card"><div class="stat-label">Instamart Dark Stores</div><div class="stat-val">1,143</div><div class="stat-sub neu">+7 in Q4</div></div>
+    <div class="stat-card hi"><div class="stat-label">Blinkit MTU</div><div class="stat-val">27.2mn</div><div class="stat-sub pos">+15% QoQ</div></div>
+    <div class="stat-card"><div class="stat-label">Instamart MTU</div><div class="stat-val">13.3mn</div><div class="stat-sub pos">+4% QoQ</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card full"><div class="chart-title">Net Order Value (NOV)</div><div class="chart-sub">INR billion · Q1FY25 → Q4FY26</div><div class="chart-wrap"><canvas id="c-nov"></canvas></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card"><div class="chart-title">EBITDA Margin %</div><div class="chart-sub">% of NOV (Blinkit) / GOV (Instamart)</div><div class="chart-wrap"><canvas id="c-eb"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Dark Store Count</div><div class="chart-sub">Active stores at quarter end</div><div class="chart-wrap"><canvas id="c-str"></canvas></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card"><div class="chart-title">Monthly Transacting Users</div><div class="chart-sub">Millions</div><div class="chart-wrap"><canvas id="c-mtu"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">NOV Gap (₹bn)</div><div class="chart-sub">Blinkit minus Instamart — widening each quarter</div><div class="chart-wrap"><canvas id="c-gap"></canvas></div></div>
+  </div>
+  <div class="insight-grid">
+    <div class="insight-card" style="border:1px solid rgba(249,115,22,.2)"><div class="insight-num" style="color:var(--eternal)">01</div><div class="insight-title" style="color:var(--eternal)">NOV gap is widening, not closing</div><div class="insight-body">Q4FY25: Blinkit 2.1× Instamart. Q4FY26: 2.5×. At current trajectories the gap reaches 3× by Q2FY27. This is compounding quarter on quarter.</div></div>
+    <div class="insight-card" style="border:1px solid rgba(168,85,247,.2)"><div class="insight-num" style="color:var(--purple)">02</div><div class="insight-title" style="color:var(--purple)">Blinkit profitable. Instamart still at −₹8.6bn/qtr.</div><div class="insight-body">Blinkit turned EBITDA positive in Q3FY26. Instamart guides CM breakeven for Q1FY27. If achieved, expect volume investment to resume in Q2FY27.</div></div>
+    <div class="insight-card" style="border:1px solid rgba(244,63,94,.2)"><div class="insight-num" style="color:var(--swiggy)">03</div><div class="insight-title" style="color:var(--swiggy)">Store velocity: 216 vs 7 in a single quarter</div><div class="insight-body">Blinkit added 216 stores in Q4. Instamart added 7. Over 8 quarters: Blinkit 639→2,243; Instamart 557→1,143. Fundamentally different expansion strategies.</div></div>
+  </div>
+</div>
+
+<!-- FOOD DELIVERY -->
+<div id="panel-food" class="panel">
+  <div class="stat-grid">
+    <div class="stat-card hi"><div class="stat-label">Zomato NOV Q4FY26</div><div class="stat-val">₹97.6bn</div><div class="stat-sub pos">+18.8% YoY</div></div>
+    <div class="stat-card"><div class="stat-label">Swiggy GOV Q4FY26</div><div class="stat-val">₹90.1bn</div><div class="stat-sub pos">+22.6% YoY</div></div>
+    <div class="stat-card hi"><div class="stat-label">Zomato EBITDA Margin</div><div class="stat-val">5.5%</div><div class="stat-sub pos">+30bps QoQ</div></div>
+    <div class="stat-card"><div class="stat-label">Swiggy EBITDA Margin</div><div class="stat-val">3.3%</div><div class="stat-sub pos">+30bps QoQ</div></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-card hi"><div class="stat-label">Zomato MTU</div><div class="stat-val">25.4mn</div><div class="stat-sub pos">+2% QoQ</div></div>
+    <div class="stat-card"><div class="stat-label">Swiggy MTU</div><div class="stat-val">18.3mn</div><div class="stat-sub pos">+1% QoQ</div></div>
+    <div class="stat-card hi"><div class="stat-label">Zomato Rest. Partners</div><div class="stat-val">344k</div><div class="stat-sub pos">+8k QoQ</div></div>
+    <div class="stat-card"><div class="stat-label">Swiggy Rest. Partners</div><div class="stat-val">275k</div><div class="stat-sub pos">+5k QoQ</div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card full"><div class="chart-title">Order Value Scale</div><div class="chart-sub">INR billion · Zomato NOV / Swiggy GOV · Q1FY25 → Q4FY26</div><div class="chart-wrap"><canvas id="c-fnov"></canvas></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card"><div class="chart-title">EBITDA Margin %</div><div class="chart-sub">Adj EBITDA as % of GOV/NOV</div><div class="chart-wrap"><canvas id="c-feb"></canvas></div></div>
+    <div class="chart-card"><div class="chart-title">Monthly Transacting Users</div><div class="chart-sub">Millions</div><div class="chart-wrap"><canvas id="c-fmtu"></canvas></div></div>
+  </div>
+  <div class="chart-grid">
+    <div class="chart-card full"><div class="chart-title">Zomato EBITDA Lead (percentage points)</div><div class="chart-sub">Persistent ~220bps gap — both improving at same rate</div><div class="chart-wrap" style="height:160px"><canvas id="c-fgap"></canvas></div></div>
+  </div>
+  <div class="insight-grid">
+    <div class="insight-card" style="border:1px solid rgba(249,115,22,.2)"><div class="insight-num" style="color:var(--eternal)">01</div><div class="insight-title" style="color:var(--eternal)">Swiggy outgrowing Zomato — 3 quarters running</div><div class="insight-body">Swiggy food GOV +22.6% YoY vs Zomato NOV +18.8%. Third consecutive quarter Swiggy's growth rate leads. Unusual for a #2 platform to sustain this.</div></div>
+    <div class="insight-card" style="border:1px solid rgba(244,63,94,.2)"><div class="insight-num" style="color:var(--swiggy)">02</div><div class="insight-title" style="color:var(--swiggy)">220bps EBITDA gap — structural, not temporary</div><div class="insight-body">Zomato 5.5% vs Swiggy 3.3%. Both improving at ~30bps/quarter. At this pace Swiggy closes the gap in 7–8 quarters. Zomato's denser order network is a compounding advantage.</div></div>
+    <div class="insight-card" style="border:1px solid rgba(34,197,94,.2)"><div class="insight-num" style="color:var(--green)">03</div><div class="insight-title" style="color:var(--green)">Food delivery: 8% gap. QCom: 2.5× gap.</div><div class="insight-body">In food, the scale difference is close. In QCom, Blinkit is 2.5× Instamart on NOV. For FMCG brand spend allocation, food delivery is the competitive fight. QCom is Blinkit's market to lose.</div></div>
+  </div>
+</div>
+
+<!-- SCORECARD -->
+<div id="panel-scorecard" class="panel">
+  <div style="margin-bottom:28px">
+    <div style="font-size:10px;color:var(--eternal);letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:8px">Full Scorecard</div>
+    <div style="font-size:22px;font-weight:900;margin-bottom:4px">Q4 FY26 · Head-to-Head</div>
+    <div style="font-size:12px;color:var(--gray)">Based on publicly disclosed Eternal and Swiggy KPI books · May 2026</div>
+  </div>
+  <table class="score-table">
+    <thead><tr>
+      <th style="color:var(--gray);width:35%">Quick Commerce</th>
+      <th style="color:var(--eternal)">Blinkit (Eternal)</th>
+      <th style="color:var(--swiggy)">Instamart (Swiggy)</th>
+      <th style="color:var(--gray)">Edge</th>
+    </tr></thead>
+    <tbody id="qcom-rows"></tbody>
+  </table>
+  <table class="score-table">
+    <thead><tr>
+      <th style="color:var(--gray);width:35%">Food Delivery</th>
+      <th style="color:var(--eternal)">Zomato (Eternal)</th>
+      <th style="color:var(--swiggy)">Swiggy Food</th>
+      <th style="color:var(--gray)">Edge</th>
+    </tr></thead>
+    <tbody id="food-rows"></tbody>
+  </table>
+  <div class="insight-grid">
+    <div class="insight-card" style="border:1px solid rgba(249,115,22,.2)"><div class="insight-num" style="color:var(--eternal)">01</div><div class="insight-title">QCom is Blinkit's market</div><div class="insight-body">Blinkit: ₹143.9bn NOV, EBITDA positive, 2,243 stores, 27.2mn MTU. The real contest is between Instamart and Zepto for #2. Instamart's margin focus makes this genuinely uncertain through FY27.</div></div>
+    <div class="insight-card" style="border:1px solid rgba(244,63,94,.2)"><div class="insight-num" style="color:var(--swiggy)">02</div><div class="insight-title">Food delivery: Swiggy holding ground</div><div class="insight-body">Swiggy food growing faster than Zomato for three consecutive quarters. The 220bps profitability gap is real but narrowing. Most competitive segment in Indian consumer internet.</div></div>
+    <div class="insight-card" style="border:1px solid rgba(168,85,247,.2)"><div class="insight-num" style="color:var(--purple)">03</div><div class="insight-title">FMCG investment implication</div><div class="insight-body">Weight Blinkit heavier on QCom investment — it's 2.5× Instamart, profitable, and expanding at 30× the store velocity. But Swiggy food's growth rate makes it worth nurturing independently.</div></div>
+  </div>
+  <div style="margin-top:24px;padding:14px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;justify-content:space-between;font-size:11px;color:var(--dim)">
+    <span>Data: Eternal KPI Book Q4FY26 · Swiggy KPI Book Q4FY26</span>
+    <span>All figures INR · Compiled May 2026</span>
+  </div>
+</div>
+
+<script>
+const Q=["Q1FY25","Q2FY25","Q3FY25","Q4FY25","Q1FY26","Q2FY26","Q3FY26","Q4FY26"];
+const E="#f97316",S="#f43f5e";
+const D={
+  bn: [40.61,49.28,60.20,73.62,92.03,116.79,133.00,143.86],
+  in: [23.87,28.66,31.03,35.41,41.87,48.92,54.56,56.75],
+  be: [-0.1,-0.2,-1.7,-2.4,-1.8,-1.3,0.0,0.3],
+  ie: [-11.7,-10.6,-14.8,-18.0,-15.8,-12.1,-11.4,-10.9],
+  bs: [639,791,1007,1301,1544,1816,2027,2243],
+  is: [557,609,705,1021,1062,1102,1136,1143],
+  bm: [7.6,8.9,10.6,13.7,16.9,20.8,23.6,27.2],
+  im: [5.24,6.17,7.03,9.84,11.06,11.97,12.78,13.30],
+  zn: [79.28,82.81,84.43,82.10,89.67,94.23,98.46,97.57],
+  sg: [68.08,71.91,74.36,73.47,80.86,85.42,89.59,90.05],
+  ze: [3.9,4.1,5.0,5.2,5.0,5.3,5.4,5.5],
+  se: [0.8,1.6,2.5,2.9,2.4,2.8,3.0,3.3],
+  zm: [20.3,20.7,20.5,20.9,22.9,24.1,24.9,25.4],
+  sm: [14.03,14.68,14.85,15.08,16.28,17.21,18.11,18.31],
+};
+Chart.defaults.color="#666";
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.font.size=11;
+const G={color:"#1e1e22",lineWidth:0.8};
+const T={color:"#555"};
+const base={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#888",boxWidth:12,padding:16}}},scales:{x:{grid:G,ticks:T,border:{color:"#1e1e22"}},y:{grid:G,ticks:T,border:{color:"#1e1e22"}}}};
+function bar(id,ds,yOpts={}){new Chart(document.getElementById(id),{type:"bar",data:{labels:Q,datasets:ds},options:{...base,scales:{...base.scales,y:{...base.scales.y,...yOpts}}}})}
+function line(id,ds,yOpts={}){new Chart(document.getElementById(id),{type:"line",data:{labels:Q,datasets:ds},options:{...base,scales:{...base.scales,y:{...base.scales.y,...yOpts}}}})}
+let built=false;
+function buildCharts(){
+  if(built)return; built=true;
+  bar("c-nov",[{label:"Blinkit",data:D.bn,backgroundColor:E+"cc",borderRadius:4},{label:"Instamart",data:D.in,backgroundColor:S+"cc",borderRadius:4}]);
+  line("c-eb",[{label:"Blinkit",data:D.be,borderColor:E,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:E},{label:"Instamart",data:D.ie,borderColor:S,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:S}]);
+  line("c-str",[{label:"Blinkit",data:D.bs,borderColor:E,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:E},{label:"Instamart",data:D.is,borderColor:S,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:S}]);
+  bar("c-mtu",[{label:"Blinkit",data:D.bm,backgroundColor:E+"cc",borderRadius:4},{label:"Instamart",data:D.im,backgroundColor:S+"cc",borderRadius:4}]);
+  bar("c-gap",[{label:"Blinkit lead (₹bn)",data:D.bn.map((v,i)=>+(v-D.in[i]).toFixed(1)),backgroundColor:E+"99",borderRadius:4}],{});
+  bar("c-fnov",[{label:"Zomato (NOV)",data:D.zn,backgroundColor:E+"cc",borderRadius:4},{label:"Swiggy (GOV)",data:D.sg,backgroundColor:S+"cc",borderRadius:4}]);
+  line("c-feb",[{label:"Zomato",data:D.ze,borderColor:E,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:E},{label:"Swiggy",data:D.se,borderColor:S,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:S}]);
+  line("c-fmtu",[{label:"Zomato",data:D.zm,borderColor:E,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:E},{label:"Swiggy",data:D.sm,borderColor:S,fill:false,tension:.3,pointRadius:5,pointBackgroundColor:S}]);
+  bar("c-fgap",[{label:"Zomato lead (pp)",data:D.ze.map((v,i)=>+(v-D.se[i]).toFixed(1)),backgroundColor:E+"99",borderRadius:4}]);
+}
+function switchTab(name,btn){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.getElementById("panel-"+name).classList.add("active");
+  btn.classList.add("active");
+  setTimeout(buildCharts,50);
+}
+const qR=[["NOV Q4FY26","₹143.9bn","₹56.8bn","Blinkit",E,S],["YoY NOV Growth","+95.4%","+60.3%","Blinkit",E,S],["Sequential Growth","+8.2%","+4.0%","Blinkit",E,S],["Adj EBITDA Margin","+0.3% of NOV","-10.9% of GOV","Blinkit",E,S],["Adj EBITDA (₹bn)","+0.37","-8.58","Blinkit",E,S],["Dark Stores","2,243","1,143","Blinkit",E,S],["Stores added Q4","+216","+7","Blinkit",E,S],["MTU","27.2mn","13.3mn","Blinkit",E,S]];
+const fR=[["GOV/NOV Q4FY26","₹97.6bn","₹90.1bn","Zomato",E,S],["YoY Growth","+18.8%","+22.6%","Swiggy",E,S],["EBITDA Margin","5.5%","3.3%","Zomato",E,S],["Adj EBITDA (₹bn)","5.32","2.97","Zomato",E,S],["MTU","25.4mn","18.3mn","Zomato",E,S],["Rest. Partners","344k","275k","Zomato",E,S],["Platform Freq.","4.01","4.01","—",E,S],["Delivery Partners","576k","612k","Swiggy",E,S]];
+function row([m,va,vb,w,ca,cb]){
+  const ac=(w==="Blinkit"||w==="Zomato")?ca:"#e8e8ea";
+  const bc=(w==="Instamart"||w==="Swiggy")?cb:"#e8e8ea";
+  const wc=(w==="Blinkit"||w==="Zomato")?ca:(w==="Instamart"||w==="Swiggy")?cb:"#555";
+  return `<tr><td style="color:#888">${m}</td><td style="color:${ac}">${va}</td><td style="color:${bc}">${vb}</td><td><span class="winner-badge" style="color:${wc};background:${wc}22;border:1px solid ${wc}40">${w}</span></td></tr>`;
+}
+document.getElementById("qcom-rows").innerHTML=qR.map(row).join("");
+document.getElementById("food-rows").innerHTML=fR.map(row).join("");
+window.addEventListener("load",()=>setTimeout(buildCharts,100));
+</script>
+</body>
+</html>
